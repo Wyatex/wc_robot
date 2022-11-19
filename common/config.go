@@ -18,7 +18,15 @@ type Config struct {
 	CovidMsgHandle   *CovidMsgHandle    `yaml:"covid_msg_handle"`   // 疫情消息自动回复
 	WeatherSchedule  []*WeatherSchedule `yaml:"weather_schedules"`  // 每天定时发送天气提醒
 	ClockInSchedule  []*ClockInSchedule `yaml:"clock_in_schedules"` // 每天定时发送信息
+	NewsSchedule     []*NewsSchedule    `yaml:"news_schedules"`     // 每天定时发送信息
 	DaysMatters      []*DaysMatter      `yaml:"days_matters"`       // 重要的日子， 设置则会每天定时提醒距离该日子的时间
+}
+
+// 每天定时发送天气提醒
+type NewsSchedule struct {
+	SwitchOn    bool   `yaml:"switch_on"`    // 该功能开关，true为开，false为关闭
+	ToNickNames string `yaml:"to_nicknames"` // 发送给哪些人/群，发送多人/群则通过英文","分隔,比如a,b,c(昵称)
+	Times       string `yaml:"times"`        // 发送的时间，支持多个时间，通过英文","分隔，比如00:00,9:00(注意合法时间)
 }
 
 // 天气、空气质量消息自动回复相关参数

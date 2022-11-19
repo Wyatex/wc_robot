@@ -61,6 +61,18 @@ func InitTasks(config *common.Config) {
 		}
 	}
 
+	// 每天发一次新闻
+	for _, wn := range config.NewsSchedule {
+		if !wn.SwitchOn {
+			continue
+		}
+		times := strings.Split(wn.Times, separator)
+		for _, time := range times {
+			if err := gocron.Every(1).Day().At(time).Do(sendNews, wn.ToNickNames); err != nil {
+				log.Printf("[ERROR]添加定时任务%v出错,err: %v\n", wn, err)
+			}
+		}
+	}
 	gocron.Start()
 }
 
@@ -167,4 +179,21 @@ func getToUsers(toNickNames, ToRemarkNames string) []*User {
 		users = append(users, ms...)
 	}
 	return users
+}
+
+func sendNews(toNickNames string) {
+	users := getToUsers(toNickNames, "")
+	if len(users) == 0 {
+		return
+	}
+	w, err := common.GetNewsResponse()
+	if err != nil {
+		log.Printf("[ERROR]获取新闻信息失败 err:%v", err)
+	}
+	for _, user := range users {
+		_, err = Storage.Self.SendTextToUser(user, w)
+		if err != nil {
+			log.Printf("[ERROR]发送消息给 %s 失败, err:%v", user.NickName, err)
+		}
+	}
 }

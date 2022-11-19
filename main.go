@@ -54,6 +54,8 @@ func main() {
 	if config.CovidMsgHandle.SwitchOn {
 		r.Chain.RegisterHandler("疫情回复", onCovid)
 	}
+	r.Chain.RegisterHandler("一言", onHitokoto)
+	r.Chain.RegisterHandler("今日新闻", onNews)
 
 	if err := r.Login(); err != nil {
 		log.Println(err)
@@ -66,9 +68,10 @@ func main() {
 
 // 判断是否匹配，匹配返回 true, 不匹配返回 false
 func checkMatch(msg *robot.Message, keyword string) bool {
-	config := common.GetConfig()
+	//config := common.GetConfig()
 	if msg.IsFromGroup() {
-		if !(strings.Contains(msg.Content, "@"+config.RobotName) && strings.Contains(msg.Content, keyword)) {
+		//if !(strings.Contains(msg.Content, "@"+config.RobotName) && strings.Contains(msg.Content, keyword)) {
+		if !strings.Contains(msg.Content, keyword) {
 			return false
 		}
 	}
@@ -172,6 +175,37 @@ func onMingYan(msg *robot.Message) error {
 	}
 	_, err = msg.ReplyText(content)
 	return err
+}
+
+func onNews(msg *robot.Message) error {
+	if !checkMatch(msg, "今天新闻") {
+		return nil
+	}
+	news, err := common.GetNewsResponse()
+	if err != nil {
+		msg.ReplyText("接口异常：" + err.Error())
+		return err
+	}
+	_, err = msg.ReplyText(news)
+	return err
+}
+
+func onHitokoto(msg *robot.Message) error {
+	if !checkMatch(msg, "一言") {
+		return nil
+	}
+	cr, err := common.GetHitokotoResponse()
+	if err != nil {
+		msg.ReplyText("接口异常：" + err.Error())
+		return err
+	}
+	if cr.FromWho == "" {
+		_, err = msg.ReplyText(cr.Hitokoto + " —— " + "「" + cr.From + "」")
+		return err
+	} else {
+		_, err = msg.ReplyText(cr.Hitokoto + " —— " + cr.FromWho + "「" + cr.From + "」")
+		return err
+	}
 }
 
 var locationRE = regexp.MustCompile("([\u4e00-\u9fa5]{1,6})疫情")
