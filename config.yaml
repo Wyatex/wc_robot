@@ -9,7 +9,7 @@ on_contact_nicknames: "中科院佛山分院计算机研究所,樱吹雪,bot测�
 # 具体城市/地区对应的 city_code 见 wc_robot/common/weather/cityID.xlsx
 # 默认设置为"深圳南山"的地区码
 weather_msg_handle:
-  switch_on: true
+  switch_on: false
   city_code: "101280604"
 
 

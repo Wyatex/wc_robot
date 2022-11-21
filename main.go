@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"regexp"
 	"strings"
 	"time"
+	"wc_robot/common/nba"
 
 	"wc_robot/common"
 	"wc_robot/common/alapi"
@@ -31,7 +33,7 @@ func init() {
 	// log.SetOutput(w)
 }
 
-var begin time.Time = time.Now()
+var begin = time.Now()
 
 func main() {
 	defer func() {
@@ -55,7 +57,9 @@ func main() {
 		r.Chain.RegisterHandler("疫情回复", onCovid)
 	}
 	r.Chain.RegisterHandler("一言", onHitokoto)
+	r.Chain.RegisterHandler("我老婆是谁", onWife)
 	r.Chain.RegisterHandler("今日新闻", onNews)
+	r.Chain.RegisterHandler("NBA赛程", onNBA)
 
 	if err := r.Login(); err != nil {
 		log.Println(err)
@@ -98,6 +102,40 @@ func onMenu(msg *robot.Message) error {
 		}
 	}
 	_, err := msg.ReplyText("你好呀👋\n" + `目前只支持"天气"、"空气质量(指标含义)"、"XX(城市、省份、国家)疫情"、"情话"、"鸡汤"、"名言"相关的问题哦`)
+	return err
+}
+
+func onNBA(msg *robot.Message) error {
+	if !checkMatch(msg, "NBA赛程") && !msg.IsFromMember() {
+		return nil
+	}
+	str, err := nba.GetNBAResponse()
+	if err != nil {
+		return err
+	}
+	_, err = msg.ReplyText(str)
+	return err
+}
+
+func onWife(msg *robot.Message) error {
+	if !checkMatch(msg, "我老婆是谁") {
+		return nil
+	}
+	// 拿出所有成员
+	j := 0
+	keys := make([]string, len(robot.Storage.MemberMap))
+	for k := range robot.Storage.MemberMap {
+		keys[j] = k
+		j++
+	}
+	// 抽一个成员
+	rand.Seed(time.Now().Unix())
+	user := robot.Storage.MemberMap[keys[rand.Intn(len(keys))]]
+	fmt.Println(user)
+	sb := strings.Builder{}
+	sb.WriteString("今天你的群老婆是：")
+	sb.WriteString(user.NickName)
+	_, err := msg.ReplyText(sb.String())
 	return err
 }
 
@@ -197,6 +235,7 @@ func onHitokoto(msg *robot.Message) error {
 	cr, err := common.GetHitokotoResponse()
 	if err != nil {
 		msg.ReplyText("接口异常：" + err.Error())
+
 		return err
 	}
 	if cr.FromWho == "" {

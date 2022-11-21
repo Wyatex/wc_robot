@@ -21,9 +21,9 @@ type Handler struct {
 
 // 执行处理链中的handlers
 func (c *MsgHandlerChain) Handle(message *Message) {
-	if !checkOnContact(message) {
-		return
-	}
+	//if !checkOnContact(message) {
+	//	return
+	//}
 	for _, handler := range c.Handlers {
 		err := handler.HandleFn(message)
 		if err != nil {
