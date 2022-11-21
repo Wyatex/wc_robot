@@ -106,7 +106,7 @@ func onMenu(msg *robot.Message) error {
 }
 
 func onNBA(msg *robot.Message) error {
-	if !checkMatch(msg, "NBA赛程") && msg.IsFromGroup() {
+	if !checkMatch(msg, "NBA赛程") || msg.IsFromGroup() {
 		return nil
 	}
 	str, err := nba.GetNBAResponse()
