@@ -60,6 +60,7 @@ func main() {
 	r.Chain.RegisterHandler("我老婆是谁", onWife)
 	r.Chain.RegisterHandler("今日新闻", onNews)
 	r.Chain.RegisterHandler("NBA赛程", onNBA)
+	r.Chain.RegisterHandler("疯狂星期四", onKFC)
 
 	if err := r.Login(); err != nil {
 		log.Println(err)
@@ -102,6 +103,14 @@ func onMenu(msg *robot.Message) error {
 		}
 	}
 	_, err := msg.ReplyText("你好呀👋\n" + `目前只支持"天气"、"空气质量(指标含义)"、"XX(城市、省份、国家)疫情"、"情话"、"鸡汤"、"名言"相关的问题哦`)
+	return err
+}
+
+func onKFC(msg *robot.Message) error {
+	if !checkMatch(msg, "疯狂星期四") || msg.IsFromGroup() {
+		return nil
+	}
+	_, err := msg.ReplyText(common.GetKFC())
 	return err
 }
 
