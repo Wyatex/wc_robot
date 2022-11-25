@@ -61,6 +61,7 @@ func main() {
 	r.Chain.RegisterHandler("今日新闻", onNews)
 	r.Chain.RegisterHandler("NBA赛程", onNBA)
 	r.Chain.RegisterHandler("疯狂星期四", onKFC)
+	r.Chain.RegisterHandler("拍一拍", onPai)
 
 	if err := r.Login(); err != nil {
 		log.Println(err)
@@ -107,10 +108,18 @@ func onMenu(msg *robot.Message) error {
 }
 
 func onKFC(msg *robot.Message) error {
-	if !checkMatch(msg, "疯狂星期四") || msg.IsFromGroup() {
+	if !checkMatch(msg, "疯狂星期四") {
 		return nil
 	}
 	_, err := msg.ReplyText(common.GetKFC())
+	return err
+}
+
+func onPai(msg *robot.Message) error {
+	if !checkMatch(msg, "拍了拍我") {
+		return nil
+	}
+	_, err := msg.ReplyText(common.GetPaiYiPai())
 	return err
 }
 
