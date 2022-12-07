@@ -279,7 +279,7 @@ func onCovid(msg *robot.Message) error {
 	}
 	cr, err := covid.GetCovidResponse(hits[1])
 	if err != nil {
-		msg.ReplyText("非常抱歉，未检索到该地区疫情数据")
+		//msg.ReplyText("非常抱歉，未检索到该地区疫情数据")
 		return err
 	}
 	_, err = msg.ReplyText(covid.PrintCovidSituation(cr))

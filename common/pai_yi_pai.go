@@ -15,6 +15,8 @@ var pai = []string{
 	"我爪巴，球球您别拍了",
 	"你再拍！",
 	"烦诶！你拍什么呢",
+	"请不要拍吹雪酱>_<",
+	"lsp你再拍！",
 }
 
 func GetPaiYiPai() string {
